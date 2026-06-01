@@ -1,0 +1,28 @@
+services:
+  tethering-enter-node:
+    build: .
+    image: tethering-enter-node:local
+    container_name: tethering-enter-node
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - "1194:1194/udp"
+      - "443:443/udp"
+    environment:
+      SSH_TUNNEL_HOST: "exit.example.com"
+      SSH_TUNNEL_PORT: "22"
+      SSH_TUNNEL_USER: "proxyuser"
+      SSH_KEY_PATH: "/run/secrets/ssh_private_key"
+      HYSTERIA_AUTH_PASSWORD: "change-me"
+      HYSTERIA_LISTEN: ":443"
+      OPENVPN_PORT: "1194"
+      OPENVPN_PROTO: "udp"
+    volumes:
+      - tethering-data:/data
+      - ./secrets/ssh_private_key:/run/secrets/ssh_private_key:ro
+
+volumes:
+  tethering-data:
